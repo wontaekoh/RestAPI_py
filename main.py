@@ -14,6 +14,7 @@ class VideoModel(db.Model):
     views = db.Column(db.Integer, nullable=False)
     likes = db.Column(db.Integer, nullable=False)
 
+    # Represention of a class's objects as a string
     def __repr__(self):
         return f'Video(name={name}, views={views}, likes={likes})'
 
@@ -21,6 +22,7 @@ class VideoModel(db.Model):
 # db.create_all()
 
 
+# Video create arguments
 video_put_args = reqparse.RequestParser()
 video_put_args.add_argument(
     "name", type=str, help="Name of the video is required", required=True)
@@ -29,6 +31,7 @@ video_put_args.add_argument(
 video_put_args.add_argument(
     "likes", type=int, help="Likes on the video is required", required=True)
 
+# Video update arguments
 video_update_args = reqparse.RequestParser()
 video_update_args.add_argument(
     "name", type=str, help="Name of the video")
@@ -47,6 +50,7 @@ resource_fields = {
 
 
 class Video(Resource):
+    # Read all
     @marshal_with(resource_fields)
     def get(self):
         result = VideoModel.query.all()
@@ -54,6 +58,7 @@ class Video(Resource):
             abort(404, message="Video ID is not valid...")
         return result
 
+    # Read one
     @marshal_with(resource_fields)
     def get(self, video_id):
         result = VideoModel.query.filter_by(id=video_id).first()
@@ -61,6 +66,7 @@ class Video(Resource):
             abort(404, message="Video ID is not valid...")
         return result
 
+    # Create
     @marshal_with(resource_fields)
     def put(self, video_id):
         args = video_put_args.parse_args()
@@ -74,6 +80,7 @@ class Video(Resource):
         db.session.commit()
         return video, 201    # return created (201) status code
 
+    # Update
     @marshal_with(resource_fields)
     def patch(self, video_id):
         args = video_update_args.parse_args()
@@ -91,6 +98,7 @@ class Video(Resource):
         db.session.commit()
         return result
 
+    # Delete
     @marshal_with(resource_fields)
     def delete(self, video_id):
         args = video_update_args.parse_args()
@@ -105,4 +113,4 @@ api.add_resource(Video, "/video/<int:video_id>")
 
 
 if __name__ == "__main__":
-    app.run(debug=True)  # Testing enviornment
+    app.run(debug=True)  # For testing enviornment
